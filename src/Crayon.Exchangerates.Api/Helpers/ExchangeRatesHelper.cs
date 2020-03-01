@@ -9,18 +9,38 @@ namespace Crayon.Exchangerates.Api.Helpers
 
     public class ExchangeRatesHelper : IExchangeRatesHelper
     {
-        
+
+        /// <summary>
+        /// Format url according to api
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="baseCurrency"></param>
+        /// <param name="targetCurrency"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
         public string GetEndPointUrl(string url, string baseCurrency, string targetCurrency, DateTime? startDate, DateTime? endDate)
         {
             return $"{url}?start_at={startDate.Value.ToString("yyyy-MM-dd")}&end_at={endDate.Value.ToString("yyyy-MM-dd")}&symbols={baseCurrency},{targetCurrency}";
         }
 
+        /// <summary>
+        /// Order according to ExchangeRatesDates
+        /// </summary>
+        /// <param name="inputModel"></param>
+        /// <returns></returns>
         public ExchangeRatesInputModel OrderInputDates(ExchangeRatesInputModel inputModel)
         {
             inputModel.ExchangeRatesDates = inputModel.ExchangeRatesDates.OrderBy(d => d.ExchangeRatesDate).ToList();
             return inputModel;
         }
 
+        /// <summary>
+        /// Parse the api json and return the model
+        /// </summary>
+        /// <param name="exchangeRatesHistoryData"></param>
+        /// <param name="inputModel"></param>
+        /// <returns></returns>
         public List<ExchangeRatesHistoryModel> ParseExchangeRatesHistory(string exchangeRatesHistoryData, ExchangeRatesInputModel inputModel)
         {
             var exchangeRatesHistory = JObject.Parse(exchangeRatesHistoryData).Value<JObject>("rates");
@@ -45,6 +65,11 @@ namespace Crayon.Exchangerates.Api.Helpers
             return exchangeRatesHistoryResult;
         }
 
+        /// <summary>
+        /// Create response from model
+        /// </summary>
+        /// <param name="exchangeRatesHistoryModels"></param>
+        /// <returns></returns>
         public ExchangeRatesResponseModel CreateExchangeRatesResponse(List<ExchangeRatesHistoryModel> exchangeRatesHistoryModels)
         {
             exchangeRatesHistoryModels = exchangeRatesHistoryModels.OrderBy(r => r.Rate).ToList();
@@ -58,6 +83,11 @@ namespace Crayon.Exchangerates.Api.Helpers
                 AvgRate = $"An average rate of {avg}"
             };
         }
+        /// <summary>
+        /// Map and convert comma seprated values into dates
+        /// </summary>
+        /// <param name="fromModel"></param>
+        /// <returns></returns>
         public ExchangeRatesInputModel Mapper(ExchangeRatesQueryInputModel fromModel)
         {
             var toModel = new ExchangeRatesInputModel
